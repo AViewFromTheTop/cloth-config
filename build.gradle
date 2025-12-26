@@ -1,78 +1,99 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
-    id "me.shedaniel.unified-publishing" version "0.1.+" apply false
+    id "net.fabricmc.fabric-loom" version "1.14-SNAPSHOT"
+    id "com.gradleup.shadow" version "9.2.2"
     id "maven-publish"
-    id "org.cadixdev.licenser" version "0.6.1" apply false
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+loom {
+    accessWidenerPath = file("src/main/resources/cloth-config.accessWidener")
 }
 
-subprojects {
-    if (it.name != "neoforge_coremods") {
-    apply plugin: "dev.architectury.loom"
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
 
-    loom {
-        silentMojangMappingsLicense()
-    }}
+repositories {
+    maven {
+        url "https://maven.terraformersmc.com/releases/"
+        content {
+            includeGroup "com.terraformersmc"
+        }
+    }
+    maven {
+        url "https://maven.shedaniel.me/"
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+
+    api "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    api fabricApi.module("fabric-resource-loader-v0", rootProject.fabric_api_version)
+    api fabricApi.module("fabric-screen-api-v1", rootProject.fabric_api_version)
+    api fabricApi.module("fabric-key-binding-api-v1", rootProject.fabric_api_version)
+    api fabricApi.module("fabric-lifecycle-events-v1", rootProject.fabric_api_version)
+
+    api("me.shedaniel.cloth:basic-math:0.6.1")
+    include("me.shedaniel.cloth:basic-math:0.6.1")
+
+    implementation("blue.endless:jankson:${rootProject.jankson_version}")
+    implementation("com.moandjiezana.toml:toml4j:${rootProject.toml4j_version}")
+    implementation("org.yaml:snakeyaml:${rootProject.snakeyaml_version}")
+    shadowCommon("blue.endless:jankson:${rootProject.jankson_version}")
+    shadowCommon("com.moandjiezana.toml:toml4j:${rootProject.toml4j_version}") {
+        exclude(module: "gson")
+    }
+    shadowCommon("org.yaml:snakeyaml:${rootProject.snakeyaml_version}")
+
+    compileOnly("com.terraformersmc:modmenu:${mod_menu_version}") {
+        transitive(false)
+    }
+    localRuntime("com.terraformersmc:modmenu:${mod_menu_version}") {
+        transitive(false)
+    }
+}
+
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+    inputs.property "version", project.version
+}
+
+shadowJar {
+    relocate "blue.endless.jankson", "${rootProject.maven_group}.clothconfig.shadowed.blue.endless.jankson"
+    relocate "com.moandjiezana.toml", "${rootProject.maven_group}.clothconfig.shadowed.com.moandjiezana.toml"
+    relocate "org.yaml.snakeyaml", "${rootProject.maven_group}.clothconfig.shadowed.org.yaml.snakeyaml"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = ""
+}
+
+build {
+    dependsOn(shadowJar)
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.archives_base_name + "-fabric"
+            from components.java
+        }
+    }
 
     repositories {
-        maven { url "https://maven.neoforged.net/releases/" }
-        if (rootProject.neoforge_pr != "") {
+        if (System.getenv("MAVEN_PASS") != null) {
             maven {
-                url "https://prmaven.neoforged.net/NeoForge/pr$rootProject.neoforge_pr"
-                content {
-                    includeModule("net.neoforged", "neoforge")
+                url = "https://deploy.shedaniel.me/"
+                credentials {
+                    username = "shedaniel"
+                    password = System.getenv("MAVEN_PASS")
                 }
             }
         }
     }
 }
-
-allprojects {
-    apply plugin: 'java'
-    apply plugin: 'org.cadixdev.licenser'
-
-    def runNumber = (System.getenv("GITHUB_RUN_NUMBER") == null ? "9999" : System.getenv("GITHUB_RUN_NUMBER"))
-
-    version = rootProject.base_version + "." + runNumber
-
-    base {
-        archivesName = rootProject.archives_base_name
-    }
-
-    group = rootProject.maven_group
-
-    if (it.name != "neoforge_coremods") {
-    apply plugin: 'architectury-plugin'
-
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = "UTF-8"
-
-        // The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
-        // JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
-        // We'll use that if it's available, but otherwise we'll use the older option.
-        options.release = 21
-    }}
-
-    license {
-        header = rootProject.file("HEADER")
-
-        ext {
-            name = "shedaniel"
-            year = "2020 - 2021"
-        }
-
-        include "**/*.java"
-        exclude "**/ScrollingContainer.java"
-
-        ignoreFailures = true
-    }
-}
-
-task licenseFormatAll
-subprojects { licenseFormatAll.dependsOn("${path}:licenseFormat") }
-
-task modPublish
