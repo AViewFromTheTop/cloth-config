@@ -27,6 +27,8 @@ import me.shedaniel.clothconfig2.gui.entries.DropdownBoxEntry.SelectionTopCellEl
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -167,7 +169,7 @@ public class DropdownMenuBuilder<T> extends FieldBuilder<T, DropdownBoxEntry<T>,
             }
             return null;
         };
-        private static final ItemStack BARRIER = new ItemStack(Items.BARRIER);
+        private static final ItemStack BARRIER = new ItemStack(Items.BARRIER.builtInRegistryHolder(), 1, new PatchedDataComponentMap(DataComponentMap.EMPTY));
         
         public static <T> SelectionTopCellElement<T> of(T value, Function<String, T> toObjectFunction) {
             return of(value, toObjectFunction, t -> Component.literal(t.toString()));
@@ -222,7 +224,7 @@ public class DropdownMenuBuilder<T> extends FieldBuilder<T, DropdownBoxEntry<T>,
                     textFieldWidget.setTextColor(getPreferredTextColor());
                     textFieldWidget.render(graphics, mouseX, mouseY, delta);
                     ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                    ItemStack stack = hasConfigError() ? BARRIER : new ItemStack(getValue());
+                    ItemStack stack = hasConfigError() ? BARRIER : new ItemStack(getValue().builtInRegistryHolder(), 1, new PatchedDataComponentMap(DataComponentMap.EMPTY));
                     graphics.renderItem(stack, x + width - 18, y + 2);
                 }
             };
@@ -463,11 +465,11 @@ public class DropdownMenuBuilder<T> extends FieldBuilder<T, DropdownBoxEntry<T>,
         }
         
         public static SelectionCellCreator<Item> ofItemObject(int cellHeight, int cellWidth, int maxItems) {
-            return new DefaultSelectionCellCreator<Item>(i -> Component.literal(BuiltInRegistries.ITEM.getKey(i).toString())) {
+            return new DefaultSelectionCellCreator<>(i -> Component.literal(BuiltInRegistries.ITEM.getKey(i).toString())) {
                 @Override
                 public DropdownBoxEntry.SelectionCellElement<Item> create(Item selection) {
-                    ItemStack s = new ItemStack(selection);
-                    return new DropdownBoxEntry.DefaultSelectionCellElement<Item>(selection, toTextFunction) {
+                    ItemStack s = new ItemStack(selection.builtInRegistryHolder(), 1, new PatchedDataComponentMap(DataComponentMap.EMPTY));
+                    return new DropdownBoxEntry.DefaultSelectionCellElement<>(selection, toTextFunction) {
                         @Override
                         public void render(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int width, int height, float delta) {
                             rendering = true;

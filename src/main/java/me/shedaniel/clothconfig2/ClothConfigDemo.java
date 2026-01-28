@@ -27,6 +27,7 @@ import me.shedaniel.clothconfig2.gui.entries.*;
 import me.shedaniel.clothconfig2.impl.builders.DropdownMenuBuilder;
 import me.shedaniel.clothconfig2.impl.builders.SubCategoryBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.util.Util;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,9 +37,10 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -207,10 +209,15 @@ public class ClothConfigDemo {
        
         testing.addEntry(entryBuilder.startTextDescription(
                 Component.translatable("text.cloth-config.testing.1",
-                        Component.literal("ClothConfig").withStyle(s -> s.withBold(true).withHoverEvent(new HoverEvent.ShowItem(Util.make(new ItemStack(Items.PINK_WOOL), stack -> {
-                            stack.set(DataComponents.CUSTOM_NAME, Component.literal("(\u30FB\u2200\u30FB)"));
-                            stack.enchant(VanillaRegistries.createLookup().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), 10);
-                        })))),
+                        Component.literal("ClothConfig").withStyle(s -> s.withBold(true).withHoverEvent(new HoverEvent.ShowItem(new ItemStackTemplate(Items.PINK_WOOL, DataComponentPatch.builder()
+                                .set(DataComponents.CUSTOM_NAME, Component.literal("(\u30FB\u2200\u30FB)"))
+                                .set(DataComponents.ENCHANTMENTS, Util.make(() -> {
+                                    var mut = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+                                    mut.set(VanillaRegistries.createLookup().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY), 10);
+                                    return mut.toImmutable();
+                                }))
+                                .build()
+                        )))),
                         Component.translatable("text.cloth-config.testing.2").withStyle(s -> {
                             try {
                                 return s.withColor(ChatFormatting.BLUE).withHoverEvent(new HoverEvent.ShowText(Component.literal("https://shedaniel.gitbook.io/cloth-config/"))).withClickEvent(new ClickEvent.OpenUrl(new URI("https://shedaniel.gitbook.io/cloth-config/")));
