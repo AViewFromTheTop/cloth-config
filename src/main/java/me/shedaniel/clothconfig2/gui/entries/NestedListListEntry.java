@@ -27,7 +27,7 @@ import me.shedaniel.clothconfig2.api.ReferenceProvider;
 import me.shedaniel.clothconfig2.gui.entries.NestedListListEntry.NestedListCell;
 import me.shedaniel.clothconfig2.gui.widget.DynamicEntryListWidget;
 import me.shedaniel.math.Rectangle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -104,10 +104,10 @@ public final class NestedListListEntry<T, INNER extends AbstractConfigListEntry<
         }
         
         @Override
-        public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
             nestedEntry.setParent((DynamicEntryListWidget) listListEntry.getParent());
             nestedEntry.setScreen(listListEntry.getConfigScreen());
-            nestedEntry.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
+            nestedEntry.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
         }
         
         @Override

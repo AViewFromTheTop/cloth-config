@@ -30,7 +30,7 @@ import me.shedaniel.clothconfig2.api.Requirement;
 import me.shedaniel.clothconfig2.api.TickableWidget;
 import me.shedaniel.math.Rectangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -270,22 +270,22 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         }
     }
     
-    protected void renderHeader(GuiGraphics graphics, int rowLeft, int startY) {
+    protected void renderHeader(GuiGraphicsExtractor graphics, int rowLeft, int startY) {
     }
     
     protected void drawBackground() {
     }
     
-    protected void renderDecorations(GuiGraphics graphics, int mouseX, int mouseY) {
+    protected void renderDecorations(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
     }
     
     @Deprecated
-    protected void renderBackBackground(GuiGraphics graphics) {
+    protected void renderBackBackground(GuiGraphicsExtractor graphics) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, Objects.requireNonNullElse(this.backgroundLocation, Screen.MENU_BACKGROUND), this.left, this.top, this.right, this.bottom, this.width, this.bottom - this.top, this.width, this.bottom - this.top, 32, 32, 0xFF202020);
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         this.totalTicks += delta;
         if (this.totalTicks >= 1.0f) {
             this.totalTicks = this.totalTicks % 1.0f;
@@ -314,7 +314,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         this.renderDecorations(graphics, mouseX, mouseY);
     }
     
-    protected void renderScrollBar(GuiGraphics graphics, int maxScroll, int scrollbarPositionMinX, int scrollbarPositionMaxX) {
+    protected void renderScrollBar(GuiGraphicsExtractor graphics, int maxScroll, int scrollbarPositionMinX, int scrollbarPositionMaxX) {
         if (maxScroll > 0) {
             int height = ((this.bottom - this.top) * (this.bottom - this.top)) / this.getMaxScrollPosition();
             height = Mth.clamp(height, 32, this.bottom - this.top - 8);
@@ -540,7 +540,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         return double_2 >= (double) this.top && double_2 <= (double) this.bottom && double_1 >= (double) this.left && double_1 <= (double) this.right;
     }
     
-    protected void renderList(GuiGraphics graphics, int startX, int startY, int mouseX, int mouseY, float delta) {
+    protected void renderList(GuiGraphicsExtractor graphics, int startX, int startY, int mouseX, int mouseY, float delta) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         
@@ -572,9 +572,9 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         }
     }
     
-    protected void renderItem(GuiGraphics graphics, E item, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
+    protected void renderItem(GuiGraphicsExtractor graphics, E item, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
         item.setBounds(new Rectangle(x, y, entryWidth, entryHeight));
-        item.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
+        item.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
     }
     
     protected int getRowLeft() {
@@ -598,7 +598,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         return false;
     }
     
-    protected void renderHoleBackground(GuiGraphics graphics, int y1, int y2, int alpha1, int alpha2) {
+    protected void renderHoleBackground(GuiGraphicsExtractor graphics, int y1, int y2, int alpha1, int alpha2) {
         if (backgroundLocation != null) {
             graphics.blit(RenderPipelines.GUI_TEXTURED, this.backgroundLocation, this.left, y1, this.right, y2, this.width, y2 - y1, this.width, y2 - y1,32, 32, 0xFF404040);
         }
@@ -639,7 +639,7 @@ public abstract class DynamicEntryListWidget<E extends DynamicEntryListWidget.En
         public Entry() {
         }
         
-        public abstract void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta);
+        public abstract void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta);
         
         @Override
         public boolean isMouseOver(double double_1, double double_2) {

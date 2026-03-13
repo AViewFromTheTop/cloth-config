@@ -19,7 +19,7 @@
 
 package me.shedaniel.clothconfig2.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -40,7 +40,7 @@ public class ColorDisplayWidget extends AbstractWidget {
     }
     
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         graphics.fillGradient(this.getX(), this.getY(), this.getX() + size, this.getY() + size, textFieldWidget.isFocused() ? -1 : -6250336, textFieldWidget.isFocused() ? -1 : -6250336);
         graphics.fillGradient(this.getX() + 1, this.getY() + 1, this.getX() + size - 1, this.getY() + size - 1, 0xffffffff, 0xffffffff);
         graphics.fillGradient(this.getX() + 1, this.getY() + 1, this.getX() + size - 1, this.getY() + size - 1, color, color);

@@ -27,8 +27,8 @@ import me.shedaniel.clothconfig2.gui.AbstractConfigScreen;
 import me.shedaniel.clothconfig2.gui.widget.DynamicElementListWidget;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
@@ -122,7 +122,7 @@ public abstract class AbstractConfigEntry<T> extends DynamicElementListWidget.El
         return getError();
     }
     
-    public void lateRender(GuiGraphics graphics, int mouseX, int mouseY, float delta) {}
+    public void lateRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {}
     
     public void setErrorSupplier(Supplier<Optional<Component>> errorSupplier) {
         this.errorSupplier = errorSupplier;

@@ -19,7 +19,7 @@
 
 package me.shedaniel.clothconfig2.gui.entries;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
@@ -48,7 +48,7 @@ public abstract class BaseListCell extends AbstractContainerEventHandler impleme
     
     public abstract int getCellHeight();
     
-    public abstract void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta);
+    public abstract void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta);
     
     public void updateBounds(boolean expanded, int x, int y, int entryWidth, int entryHeight) {}
     

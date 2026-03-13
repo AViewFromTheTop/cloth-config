@@ -28,7 +28,7 @@ import me.shedaniel.clothconfig2.api.Expandable;
 import me.shedaniel.clothconfig2.gui.widget.DynamicEntryListWidget;
 import me.shedaniel.math.Rectangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -123,11 +123,11 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         boolean insideWidget = widget.rectangle.contains(mouseX, mouseY);
         graphics.blit(RenderPipelines.GUI_TEXTURED, CCTextures.CONFIG, x - 15, y + 5, 24, (isEnabled() ? (insideWidget ? 18 : 0) : 36) + (isExpanded() ? 9 : 0), 9, 9, 256, 256);
-        graphics.drawString(Minecraft.getInstance().font, getDisplayedFieldName().getVisualOrderText(), x, y + 6, insideWidget ? 0xffe6fe16 : 0xffffffff);
+        graphics.text(Minecraft.getInstance().font, getDisplayedFieldName().getVisualOrderText(), x, y + 6, insideWidget ? 0xffe6fe16 : 0xffffffff);
         for (AbstractConfigListEntry<?> entry : entries) {
             entry.setParent((DynamicEntryListWidget) getParent());
             entry.setScreen(getConfigScreen());
@@ -136,7 +136,7 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
             int yy = y + 24;
             for (AbstractConfigListEntry<?> entry : filteredEntries()) {
                 entry.setBounds(new Rectangle(x + 14, yy, entryWidth - 14, entry.getItemHeight()));
-                entry.render(graphics, -1, yy, x + 14, entryWidth - 14, entry.getItemHeight(), mouseX, mouseY, isHovered && getFocused() == entry, delta);
+                entry.extractRenderState(graphics, -1, yy, x + 14, entryWidth - 14, entry.getItemHeight(), mouseX, mouseY, isHovered && getFocused() == entry, delta);
                 yy += entry.getItemHeight();
             }
         } else {
@@ -210,7 +210,7 @@ public class SubCategoryListEntry extends TooltipListEntry<List<AbstractConfigLi
     }
     
     @Override
-    public void lateRender(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void lateRender(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         if (isExpanded()) {
             for (AbstractConfigListEntry<?> entry : filteredEntries()) {
                 entry.lateRender(graphics, mouseX, mouseY, delta);

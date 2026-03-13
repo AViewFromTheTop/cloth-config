@@ -21,7 +21,7 @@ package me.shedaniel.clothconfig2.api;
 
 import me.shedaniel.clothconfig2.gui.ClothConfigScreen;
 import me.shedaniel.math.Rectangle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public abstract class AbstractConfigListEntry<T> extends AbstractConfigEntry<T> {
@@ -65,7 +65,7 @@ public abstract class AbstractConfigListEntry<T> extends AbstractConfigEntry<T> 
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
         if (isMouseInside(mouseX, mouseY, x, y, entryWidth, entryHeight)) {
             Rectangle area = getEntryArea(x, y, entryWidth, entryHeight);
             if (getParent() instanceof ClothConfigScreen.ListWidget)

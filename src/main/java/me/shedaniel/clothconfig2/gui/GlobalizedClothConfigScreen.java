@@ -31,7 +31,7 @@ import me.shedaniel.math.Rectangle;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -156,7 +156,7 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
         addRenderableWidget(cancelButton = Button.builder(isEdited() ? Component.translatable("text.cloth-config.cancel_discard") : Component.translatable("gui.cancel"), widget -> quit()).bounds(0, height - 26, buttonWidths, 20).build());
         addRenderableWidget(exitButton = new Button(0, height - 26, buttonWidths, 20, Component.empty(), button -> saveAll(true), Supplier::get) {
             @Override
-            public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+            public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
                 boolean hasErrors = false;
                 label:
                 for (List<AbstractConfigEntry<?>> entries : categorizedEntries.values()) {
@@ -170,8 +170,8 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
                 active = isEdited() && !hasErrors;
                 setMessage(hasErrors ? Component.translatable("text.cloth-config.error_cannot_save") : Component.translatable("text.cloth-config.save_and_done"));
                 
-                this.renderDefaultSprite(graphics);
-                this.renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+                this.extractDefaultSprite(graphics);
+                this.extractDefaultLabel(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
             }
         });
         Optional.ofNullable(this.afterInitConsumer).ifPresent(consumer -> consumer.accept(this));
@@ -200,7 +200,7 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         this.lastHoveredReference = null;
         if (requestingReferenceRebuilding) {
             this.references.clear();
@@ -210,28 +210,28 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
         int sliderPosition = getSideSliderPosition();
         if (!isTransparentBackground()) {
             graphics.enableScissor(sliderPosition, 0, width, height);
-            renderMenuBackground(graphics);
+            extractMenuBackground(graphics);
             overlayBackground(graphics, new Rectangle(14, 0, width, height), 64, 64, 64, 255);
         } else {
             if (this.minecraft.level == null) {
-                this.renderPanorama(graphics, delta);
+                this.extractPanorama(graphics, delta);
             }
-            renderBlurredBackground(graphics);
-            renderMenuBackground(graphics);
+            extractBlurredBackground(graphics);
+            extractMenuBackground(graphics);
             graphics.enableScissor(sliderPosition, 0, width, height);
         }
         listWidget.width = width - sliderPosition;
         listWidget.setLeftPos(sliderPosition);
-        listWidget.render(graphics, mouseX, mouseY, delta);
+        listWidget.extractRenderState(graphics, mouseX, mouseY, delta);
         graphics.enableScissor(listWidget.left, listWidget.top, listWidget.left + listWidget.width, listWidget.bottom);
         for (AbstractConfigEntry<?> child : listWidget.children())
             child.lateRender(graphics, mouseX, mouseY, delta);
         graphics.disableScissor();
-        graphics.drawString(font, title.getVisualOrderText(), (int) (sliderPosition + (width - sliderPosition) / 2f - font.width(title) / 2f), 12, -1);
+        graphics.text(font, title.getVisualOrderText(), (int) (sliderPosition + (width - sliderPosition) / 2f - font.width(title) / 2f), 12, -1);
         graphics.disableScissor();
         cancelButton.setX(sliderPosition + (width - sliderPosition) / 2 - cancelButton.getWidth() - 3);
         exitButton.setX(sliderPosition + (width - sliderPosition) / 2 + 3);
-        super.render(graphics, mouseX, mouseY, delta);
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
         sideSlider.updatePosition(delta);
         sideScroller.updatePosition(delta);
         if (isTransparentBackground()) {
@@ -253,10 +253,10 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
         {
             int textColor = slideArrowBounds.contains(mouseX, mouseY) ? 0xffffffa0 : 0xffffffff;
             if (Mth.ceil((1 - sideSlider.scrollAmount()) * 255.0F) >= 10) {
-                graphics.drawString(font, ">", Math.round(sliderPosition - 7 - font.width(">") / 2f), height / 2, textColor | Mth.clamp(Mth.ceil((1 - sideSlider.scrollAmount()) * 255.0F), 0, 255) << 24);
+                graphics.text(font, ">", Math.round(sliderPosition - 7 - font.width(">") / 2f), height / 2, textColor | Mth.clamp(Mth.ceil((1 - sideSlider.scrollAmount()) * 255.0F), 0, 255) << 24);
             }
             if (Mth.ceil(sideSlider.scrollAmount() * 255.0F) >= 10) {
-                graphics.drawString(font, "<", Math.round(sliderPosition - 7 - font.width("<") / 2f), height / 2, textColor | Mth.clamp(Mth.ceil(sideSlider.scrollAmount() * 255.0F), 0, 255) << 24);
+                graphics.text(font, "<", Math.round(sliderPosition - 7 - font.width("<") / 2f), height / 2, textColor | Mth.clamp(Mth.ceil(sideSlider.scrollAmount() * 255.0F), 0, 255) << 24);
             }
             
             Rectangle scrollerBounds = sideScroller.getBounds();
@@ -269,7 +269,7 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
                     MutableComponent text = Component.literal(StringUtils.repeat("  ", reference.getIndent()) + "- ").append(reference.getText());
                     if (lastHoveredReference == null && new Rectangle(scrollerBounds.x, (int) (scrollOffset - 4 * reference.getScale()), (int) (font.width(text) * reference.getScale()), (int) ((font.lineHeight + 4) * reference.getScale())).contains(mouseX, mouseY))
                         lastHoveredReference = reference;
-                    graphics.drawString(font, text.getVisualOrderText(), scrollerBounds.x, scrollOffset, lastHoveredReference == reference ? 0xffffe208 : 0xffffffff, false);
+                    graphics.text(font, text.getVisualOrderText(), scrollerBounds.x, scrollOffset, lastHoveredReference == reference ? 0xffffe208 : 0xffffffff, false);
                     graphics.pose().popMatrix();
                     scrollOffset += (font.lineHeight + 3) * reference.getScale();
                 }
@@ -280,7 +280,7 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
     }
     
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void extractBackground(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
     }
     
     @Override
@@ -364,12 +364,12 @@ public class GlobalizedClothConfigScreen extends AbstractConfigScreen implements
         }
         
         @Override
-        public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-            super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+        public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+            super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
             int yy = y + 2;
             List<FormattedCharSequence> texts = Minecraft.getInstance().font.split(this.text, getParent().getItemWidth());
             for (FormattedCharSequence text : texts) {
-                graphics.drawString(Minecraft.getInstance().font, text, x - 4 + entryWidth / 2 - Minecraft.getInstance().font.width(text) / 2, yy, -1);
+                graphics.text(Minecraft.getInstance().font, text, x - 4 + entryWidth / 2 - Minecraft.getInstance().font.width(text) / 2, yy, -1);
                 yy += 10;
             }
         }

@@ -24,7 +24,7 @@ import com.mojang.blaze3d.platform.Window;
 import me.shedaniel.clothconfig2.api.ModifierKeyCode;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -113,8 +113,8 @@ public class KeyCodeEntry extends TooltipListEntry<ModifierKeyCode> {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         Window window = Minecraft.getInstance().getWindow();
         this.resetButton.active = isEditable() && getDefaultValue().isPresent() && !getDefaultValue().get().equals(getValue());
         this.resetButton.setY(y);
@@ -125,17 +125,17 @@ public class KeyCodeEntry extends TooltipListEntry<ModifierKeyCode> {
             this.buttonWidget.setMessage(Component.literal("> ").withStyle(ChatFormatting.WHITE).append(this.buttonWidget.getMessage().plainCopy().withStyle(ChatFormatting.YELLOW)).append(Component.literal(" <").withStyle(ChatFormatting.WHITE)));
         Component displayedFieldName = getDisplayedFieldName();
         if (Minecraft.getInstance().font.isBidirectional()) {
-            graphics.drawString(Minecraft.getInstance().font, displayedFieldName.getVisualOrderText(), window.getGuiScaledWidth() - x - Minecraft.getInstance().font.width(displayedFieldName), y + 6, 0xffffffff);
+            graphics.text(Minecraft.getInstance().font, displayedFieldName.getVisualOrderText(), window.getGuiScaledWidth() - x - Minecraft.getInstance().font.width(displayedFieldName), y + 6, 0xffffffff);
             this.resetButton.setX(x);
             this.buttonWidget.setX(x + resetButton.getWidth() + 2);
         } else {
-            graphics.drawString(Minecraft.getInstance().font, displayedFieldName.getVisualOrderText(), x, y + 6, getPreferredTextColor());
+            graphics.text(Minecraft.getInstance().font, displayedFieldName.getVisualOrderText(), x, y + 6, getPreferredTextColor());
             this.resetButton.setX(x + entryWidth - resetButton.getWidth());
             this.buttonWidget.setX(x + entryWidth - 150);
         }
         this.buttonWidget.setWidth(150 - resetButton.getWidth() - 2);
-        resetButton.render(graphics, mouseX, mouseY, delta);
-        buttonWidget.render(graphics, mouseX, mouseY, delta);
+        resetButton.extractRenderState(graphics, mouseX, mouseY, delta);
+        buttonWidget.extractRenderState(graphics, mouseX, mouseY, delta);
     }
     
     @Override

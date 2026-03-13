@@ -22,9 +22,8 @@ package me.shedaniel.clothconfig2.gui.entries;
 import me.shedaniel.clothconfig2.gui.AbstractConfigScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -78,8 +77,8 @@ public class TextListEntry extends TooltipListEntry<Object> {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         if (this.savedWidth != entryWidth || this.savedX != x || this.savedY != y) {
             this.wrappedLines = this.textRenderer.split(this.text, entryWidth);
             this.savedWidth = entryWidth;
@@ -89,7 +88,7 @@ public class TextListEntry extends TooltipListEntry<Object> {
         int yy = y + 7;
         int textColor = isEnabled() ? color : DISABLED_COLOR;
         for (FormattedCharSequence string : wrappedLines) {
-            graphics.drawString(Minecraft.getInstance().font, string, x, yy, textColor);
+            graphics.text(Minecraft.getInstance().font, string, x, yy, textColor);
             yy += Minecraft.getInstance().font.lineHeight + 3;
         }
         
@@ -101,7 +100,7 @@ public class TextListEntry extends TooltipListEntry<Object> {
                 return;
             }
             
-            graphics.renderComponentHoverEffect(Minecraft.getInstance().font, style, mouseX, mouseY);
+            //graphics.renderComponentHoverEffect(Minecraft.getInstance().font, style, mouseX, mouseY);
         }
     }
     

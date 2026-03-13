@@ -29,7 +29,7 @@ import me.shedaniel.clothconfig2.api.animator.NumberAnimator;
 import me.shedaniel.clothconfig2.api.animator.ValueAnimator;
 import me.shedaniel.clothconfig2.gui.widget.DynamicEntryListWidget;
 import me.shedaniel.math.Rectangle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -143,11 +143,11 @@ public abstract class ScrollingContainer {
         return Mth.clamp(v, -clampExtension, maxScroll + clampExtension);
     }
     
-    public void renderScrollBar(GuiGraphics graphics) {
+    public void renderScrollBar(GuiGraphicsExtractor graphics) {
         renderScrollBar(graphics, ARGB.alpha(255), 1);
     }
     
-    public void renderScrollBar(GuiGraphics graphics, int background, float alpha) {
+    public void renderScrollBar(GuiGraphicsExtractor graphics, int background, float alpha) {
         if (hasScrollBar()) {
             Rectangle bounds = getBounds();
             int maxScroll = getMaxScroll();

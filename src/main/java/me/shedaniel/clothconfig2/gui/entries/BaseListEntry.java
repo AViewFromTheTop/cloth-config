@@ -24,7 +24,7 @@ import me.shedaniel.clothconfig2.api.Expandable;
 import me.shedaniel.clothconfig2.api.ReferenceProvider;
 import me.shedaniel.math.Rectangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -280,8 +280,8 @@ public abstract class BaseListEntry<T, C extends BaseListCell, SELF extends Base
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         BaseListCell focused = !isExpanded() || getFocused() == null || !(getFocused() instanceof BaseListCell) ? null : (BaseListCell) getFocused();
         boolean insideLabel = labelWidget.rectangle.contains(mouseX, mouseY);
         boolean insideCreateNew = isInsideCreateNew(mouseX, mouseY);
@@ -294,13 +294,13 @@ public abstract class BaseListEntry<T, C extends BaseListCell, SELF extends Base
         resetWidget.setX(x + entryWidth - resetWidget.getWidth());
         resetWidget.setY(y);
         resetWidget.active = isEditable() && getDefaultValue().isPresent() && !isMatchDefault();
-        resetWidget.render(graphics, mouseX, mouseY, delta);
+        resetWidget.extractRenderState(graphics, mouseX, mouseY, delta);
         int offset = (isInsertButtonEnabled() || isDeleteButtonEnabled() ? 6 : 0) + (isInsertButtonEnabled() ? 9 : 0) + (isDeleteButtonEnabled() ? 9 : 0);
-        graphics.drawString(Minecraft.getInstance().font, getDisplayedFieldName().getVisualOrderText(), x + offset, y + 6, insideLabel && !resetWidget.isMouseOver(mouseX, mouseY) && !insideDelete && !insideCreateNew ? 0xffe6fe16 : getPreferredTextColor());
+        graphics.text(Minecraft.getInstance().font, getDisplayedFieldName().getVisualOrderText(), x + offset, y + 6, insideLabel && !resetWidget.isMouseOver(mouseX, mouseY) && !insideDelete && !insideCreateNew ? 0xffe6fe16 : getPreferredTextColor());
         if (isExpanded()) {
             int yy = y + 24;
             for (BaseListCell cell : cells) {
-                cell.render(graphics, -1, yy, x + 14, entryWidth - 14, cell.getCellHeight(), mouseX, mouseY, getParent().getFocused() != null && getParent().getFocused().equals(this) && getFocused() != null && getFocused().equals(cell), delta);
+                cell.extractRenderState(graphics, -1, yy, x + 14, entryWidth - 14, cell.getCellHeight(), mouseX, mouseY, getParent().getFocused() != null && getParent().getFocused().equals(this) && getFocused() != null && getFocused().equals(cell), delta);
                 cell.updateBounds(true, x + 14, yy, entryWidth - 14, cell.getCellHeight());
                 yy += cell.getCellHeight();
             }

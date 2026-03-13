@@ -26,7 +26,7 @@ import me.shedaniel.math.Color;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.math.impl.PointHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -118,15 +118,15 @@ public abstract class DynamicSmoothScrollingEntryListWidget<E extends DynamicEnt
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         scrollAnimator.setTarget(handleBounceBack(this.scrollAnimator.target(), this.getMaxScroll(), delta));
         this.scrollAnimator.update(delta);
         this.scroll = scrollAnimator.value();
-        super.render(graphics, mouseX, mouseY, delta);
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
     }
     
     @Override
-    protected void renderScrollBar(GuiGraphics graphics, int maxScroll, int scrollbarPositionMinX, int scrollbarPositionMaxX) {
+    protected void renderScrollBar(GuiGraphicsExtractor graphics, int maxScroll, int scrollbarPositionMinX, int scrollbarPositionMaxX) {
         if (!smoothScrolling)
             super.renderScrollBar(graphics, maxScroll, scrollbarPositionMinX, scrollbarPositionMaxX);
         else if (maxScroll > 0) {

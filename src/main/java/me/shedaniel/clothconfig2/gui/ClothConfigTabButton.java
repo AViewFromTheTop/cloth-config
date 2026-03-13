@@ -21,8 +21,7 @@ package me.shedaniel.clothconfig2.gui;
 
 import me.shedaniel.clothconfig2.api.Tooltip;
 import me.shedaniel.math.Point;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
@@ -60,10 +59,10 @@ public class ClothConfigTabButton extends AbstractButton {
     }
     
     @Override
-    public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         active = index != screen.selectedCategoryIndex;
-        this.renderDefaultSprite(graphics);
-        this.renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+        this.extractDefaultSprite(graphics);
+        this.extractDefaultLabel(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
         
         if (isMouseOver(mouseX, mouseY)) {
             Optional<FormattedText[]> tooltip = getDescription();

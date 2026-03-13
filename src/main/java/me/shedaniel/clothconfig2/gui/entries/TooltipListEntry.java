@@ -22,7 +22,7 @@ package me.shedaniel.clothconfig2.gui.entries;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.Tooltip;
 import me.shedaniel.math.Point;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -49,8 +49,8 @@ public abstract class TooltipListEntry<T> extends AbstractConfigListEntry<T> {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         if (isMouseInside(mouseX, mouseY, x, y, entryWidth, entryHeight)) {
             getTooltip(mouseX, mouseY)
                     .map(lines -> Tooltip.of(new Point(mouseX, mouseY), wrapLinesToScreen(lines)))

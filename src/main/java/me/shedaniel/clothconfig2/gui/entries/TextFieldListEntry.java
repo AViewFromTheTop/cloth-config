@@ -22,7 +22,7 @@ package me.shedaniel.clothconfig2.gui.entries;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -64,10 +64,10 @@ public abstract class TextFieldListEntry<T> extends TooltipListEntry<T> {
         this.original = original;
         this.textFieldWidget = new EditBox(Minecraft.getInstance().font, 0, 0, 148, 18, Component.empty()) {
             @Override
-            public void renderWidget(GuiGraphics graphics, int int_1, int int_2, float float_1) {
+            public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int int_1, int int_2, float float_1) {
                 setFocused(isSelected && TextFieldListEntry.this.getFocused() == this);
                 textFieldPreRender(this);
-                super.renderWidget(graphics, int_1, int_2, float_1);
+                super.extractWidgetRenderState(graphics, int_1, int_2, float_1);
             }
             
             @Override
@@ -115,8 +115,8 @@ public abstract class TextFieldListEntry<T> extends TooltipListEntry<T> {
     }
     
     @Override
-    public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
+        super.extractRenderState(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
         Window window = Minecraft.getInstance().getWindow();
         this.resetButton.active = isEditable() && getDefaultValue().isPresent() && !isMatchDefault(textFieldWidget.getValue());
         this.resetButton.setY(y);
@@ -124,17 +124,17 @@ public abstract class TextFieldListEntry<T> extends TooltipListEntry<T> {
         this.textFieldWidget.setY(y + 1);
         Component displayedFieldName = getDisplayedFieldName();
         if (Minecraft.getInstance().font.isBidirectional()) {
-            graphics.drawString(Minecraft.getInstance().font, displayedFieldName, window.getGuiScaledWidth() - x - Minecraft.getInstance().font.width(displayedFieldName), y + 6, getPreferredTextColor());
+            graphics.text(Minecraft.getInstance().font, displayedFieldName, window.getGuiScaledWidth() - x - Minecraft.getInstance().font.width(displayedFieldName), y + 6, getPreferredTextColor());
             this.resetButton.setX(x);
             this.textFieldWidget.setX(x + resetButton.getWidth());
         } else {
-            graphics.drawString(Minecraft.getInstance().font, displayedFieldName, x, y + 6, getPreferredTextColor());
+            graphics.text(Minecraft.getInstance().font, displayedFieldName, x, y + 6, getPreferredTextColor());
             this.resetButton.setX(x + entryWidth - resetButton.getWidth());
             this.textFieldWidget.setX(x + entryWidth - 148);
         }
         setTextFieldWidth(textFieldWidget, 148 - resetButton.getWidth() - 4);
-        resetButton.render(graphics, mouseX, mouseY, delta);
-        textFieldWidget.render(graphics, mouseX, mouseY, delta);
+        resetButton.extractRenderState(graphics, mouseX, mouseY, delta);
+        textFieldWidget.extractWidgetRenderState(graphics, mouseX, mouseY, delta);
     }
     
     protected boolean isMatchDefault(String text) {

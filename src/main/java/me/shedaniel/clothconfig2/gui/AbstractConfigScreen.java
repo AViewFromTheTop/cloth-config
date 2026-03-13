@@ -27,7 +27,7 @@ import me.shedaniel.clothconfig2.gui.entries.KeyCodeEntry;
 import me.shedaniel.math.Color;
 import me.shedaniel.math.Rectangle;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -346,8 +346,8 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigScree
     }
     
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-        super.render(graphics, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
         for (Tooltip tooltip : tooltips) {
             graphics.setTooltipForNextFrame(Minecraft.getInstance().font, tooltip.getText(), tooltip.getX(), tooltip.getY());
         }
@@ -360,7 +360,7 @@ public abstract class AbstractConfigScreen extends Screen implements ConfigScree
     }
     
     @Deprecated
-    protected void overlayBackground(GuiGraphics graphics, Rectangle rect, int red, int green, int blue, int alpha) {
+    protected void overlayBackground(GuiGraphicsExtractor graphics, Rectangle rect, int red, int green, int blue, int alpha) {
         graphics.blit(RenderPipelines.GUI_TEXTURED, getBackgroundLocation(), rect.getMinX(), rect.getMinY(), rect.getMaxX(), rect.getMaxY(), rect.getWidth(), rect.getHeight(), rect.getWidth(), rect.getHeight(), 32, 32, Color.ofRGBA(red, green, blue, alpha).getColor());
     }
     

@@ -28,7 +28,7 @@ import me.shedaniel.clothconfig2.ClothConfigInitializer;
 import me.shedaniel.clothconfig2.gui.widget.DynamicEntryListWidget;
 import me.shedaniel.clothconfig2.impl.EasingMethod;
 import me.shedaniel.math.Rectangle;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -129,11 +129,11 @@ public abstract class ScrollingContainer {
         return Mth.clamp(v, -clampExtension, maxScroll + clampExtension);
     }
     
-    public void renderScrollBar(GuiGraphics graphics) {
+    public void renderScrollBar(GuiGraphicsExtractor graphics) {
         renderScrollBar(graphics, 0, 1, 1);
     }
     
-    public void renderScrollBar(GuiGraphics graphics, int background, float alpha, float scrollBarAlphaOffset) {
+    public void renderScrollBar(GuiGraphicsExtractor graphics, int background, float alpha, float scrollBarAlphaOffset) {
         if (hasScrollBar()) {
             Rectangle bounds = getBounds();
             int maxScroll = getMaxScroll();
