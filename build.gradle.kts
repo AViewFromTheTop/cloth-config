@@ -11,6 +11,8 @@ loom {
     accessWidenerPath = file("src/main/resources/cloth-config.classtweaker")
 }
 
+val maven_group: String by properties
+
 val common by configurations.creating
 val shadowCommon by configurations.creating
 
@@ -67,9 +69,9 @@ tasks.processResources {
 }
 
 tasks.named<ShadowJar>("shadowJar") {
-    relocate("blue.endless.jankson", "${property("maven_group")}.clothconfig.shadowed.blue.endless.jankson")
-    relocate("com.moandjiezana.toml", "${property("maven_group")}.clothconfig.shadowed.com.moandjiezana.toml")
-    relocate("org.yaml.snakeyaml", "${property("maven_group")}.clothconfig.shadowed.org.yaml.snakeyaml")
+    relocate("blue.endless.jankson", "${maven_group}.clothconfig.shadowed.blue.endless.jankson")
+    relocate("com.moandjiezana.toml", "${maven_group}.clothconfig.shadowed.com.moandjiezana.toml")
+    relocate("org.yaml.snakeyaml", "${maven_group}.clothconfig.shadowed.org.yaml.snakeyaml")
 
     configurations = listOf(project.configurations[shadowCommon.name])
     archiveClassifier.set("")
